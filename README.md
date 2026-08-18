@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ClinicTerapia
 
-## Getting Started
+Aplicación web para la consulta de fisioterapia de César Fonseca. Centraliza en un solo sitio la agenda del día, el expediente clínico de cada paciente, el registro de dolor y síntomas por sesión, las rutinas de ejercicios en casa y las alertas que requieren atención del terapeuta — con un portal aparte donde cada paciente ve su propia rutina.
 
-First, run the development server:
+## Estado del proyecto
+
+El proyecto se construye spec por spec siguiendo el roadmap en [`specs/00-roadmap.md`](specs/00-roadmap.md). Cada spec en `specs/` define el objetivo, el alcance y los criterios de aceptación de una parte del MVP antes de implementarla.
+
+Esta rama implementa la **SPEC 01 — Fundación, design system y acceso**: el proyecto Next.js base, el design system, el esquema de datos completo, el acceso por email/contraseña y la Agenda del día.
+
+## Stack técnico
+
+- **Next.js 15** (App Router) + **TypeScript**
+- **Tailwind CSS v4** para estilos, con tokens propios extraídos de los mockups en `assets/`
+- **Prisma ORM** + **Postgres** (alojado en [Neon](https://neon.tech))
+- **Auth.js v5** con proveedor de credenciales (email + contraseña) y sesión JWT
+- Localización fija: `es-NI`, zona horaria `America/Managua`
+
+## Puesta en marcha
 
 ```bash
+npm install
+cp .env.example .env   # completar DATABASE_URL y AUTH_SECRET
+npx prisma migrate dev
+npx prisma db seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+La app queda disponible en [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Variables de entorno
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Ver [`.env.example`](.env.example) para la lista completa. El archivo `.env` con los valores reales nunca se sube al repositorio.
 
-## Learn More
+| Variable | Para qué sirve |
+|---|---|
+| `DATABASE_URL` | Cadena de conexión a Postgres (proyecto Neon, conexión pooled) |
+| `AUTH_SECRET` | Secreto de Auth.js v5 para firmar la sesión JWT. Se genera con `npx auth secret` |
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts disponibles
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run dev         # servidor de desarrollo
+npm run build        # build de producción
+npm run start         # sirve el build de producción
+npm run lint          # ESLint
+npm run typecheck     # chequeo de tipos con tsc
+```
