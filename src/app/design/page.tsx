@@ -1,3 +1,14 @@
+import {
+  Avatar,
+  Button,
+  Card,
+  EmptyState,
+  Eyebrow,
+  SectionHeader,
+  StatTile,
+  StatusPill,
+} from "@/components/ui";
+
 const colorTokens = [
   { name: "--ct-bg-page", label: "Fondo de página" },
   { name: "--ct-surface", label: "Superficie" },
@@ -82,6 +93,87 @@ export default function DesignPage() {
               Lunes 17 de agosto
             </p>
           </div>
+        </div>
+      </section>
+
+      <section className="mt-12">
+        <SectionHeader title="Eyebrow" />
+        <div className="mt-4 rounded-xl border border-[color:var(--ct-border)] bg-[color:var(--ct-surface)] p-6">
+          <Eyebrow>Lunes 17 de agosto</Eyebrow>
+        </div>
+      </section>
+
+      <section className="mt-12">
+        <SectionHeader title="Botones" />
+        <div className="mt-4 flex flex-wrap items-center gap-3 rounded-xl border border-[color:var(--ct-border)] bg-[color:var(--ct-surface)] p-6">
+          <Button variant="primary">Entrar</Button>
+          <Button variant="primary" size="sm">
+            Abrir ficha
+          </Button>
+          <Button variant="secondary">Nota rápida</Button>
+        </div>
+      </section>
+
+      <section className="mt-12">
+        <SectionHeader title="Pills de estado" />
+        <div className="mt-4 flex flex-wrap items-center gap-3 rounded-xl border border-[color:var(--ct-border)] bg-[color:var(--ct-surface)] p-6">
+          <StatusPill tone="neutral">Hecha</StatusPill>
+          <StatusPill tone="primary">Confirmada</StatusPill>
+          <StatusPill tone="primary">Domicilio</StatusPill>
+          <StatusPill tone="outline">Sin confirmar</StatusPill>
+          <StatusPill tone="warn">Dolor al alza</StatusPill>
+        </div>
+      </section>
+
+      <section className="mt-12">
+        <SectionHeader title="Avatares" />
+        <div className="mt-4 flex flex-wrap items-center gap-3 rounded-xl border border-[color:var(--ct-border)] bg-[color:var(--ct-surface)] p-6">
+          <Avatar initials="AM" />
+          <Avatar initials="MS" />
+          <Avatar initials="LF" tone="primary" />
+          <Avatar initials="P" tone="primary" size="sm" />
+        </div>
+      </section>
+
+      <section className="mt-12">
+        <SectionHeader title="Tarjetas y StatTiles" />
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <StatTile label="Sesiones hoy" value="7" caption="2 terminadas · 1 en curso" />
+          <StatTile
+            label="Adherencia media"
+            value="81%"
+            trend="+4"
+            progress={81}
+          />
+          <StatTile
+            label="Requieren atención"
+            value="4"
+            caption="Ver la bandeja"
+            tone="highlight"
+          />
+        </div>
+        <Card className="mt-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Avatar initials="LF" tone="primary" />
+            <div>
+              <p className="text-sm font-medium">Lucía Ferrer</p>
+              <p className="text-xs text-[color:var(--ct-ink-muted)]">
+                Cervicalgia · sesión 4 de 8
+              </p>
+            </div>
+          </div>
+          <StatusPill tone="outline">Abrir</StatusPill>
+        </Card>
+      </section>
+
+      <section className="mt-12 mb-12">
+        <SectionHeader title="Estado vacío" />
+        <div className="mt-4">
+          <EmptyState
+            title="Sin citas para hoy"
+            description="Cuando agendes una cita para el terapeuta, aparecerá aquí."
+            action={<Button size="sm">Agendar cita</Button>}
+          />
         </div>
       </section>
     </div>

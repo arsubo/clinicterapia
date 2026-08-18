@@ -32,6 +32,7 @@ export default function RootLayout({
     <html lang="es">
       <body
         className={`${outfit.variable} ${inter.variable} ${ibmPlexMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         {children}
       </body>
