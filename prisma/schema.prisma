@@ -1,0 +1,203 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  THERAPIST
+  PATIENT
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  UNCONFIRMED
+  DONE
+  CANCELLED
+  NO_SHOW
+}
+
+enum AppointmentLocation {
+  CLINIC
+  HOME
+}
+
+enum BodyView {
+  FRONT
+  BACK
+}
+
+enum PainType {
+  SHARP
+  TENSION
+  DULL
+  RADIATING
+}
+
+enum ReminderChannel {
+  WHATSAPP
+  SMS
+  IN_APP
+  EMAIL
+}
+
+enum ReminderStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+enum AlertType {
+  UNCONFIRMED_APPOINTMENT
+  ROUTINE_NO_LOG
+  PAIN_INCREASE
+  DISCHARGE_DUE
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  role         Role
+  therapist    Therapist?
+  patient      Patient?
+  createdAt    DateTime  @default(now())
+}
+
+model Therapist {
+  id           String        @id @default(cuid())
+  userId       String        @unique
+  user         User          @relation(fields: [userId], references: [id])
+  fullName     String
+  licenseNo    String
+  patients     Patient[]
+  appointments Appointment[]
+}
+
+model Patient {
+  id           String        @id @default(cuid())
+  therapistId  String
+  therapist    Therapist     @relation(fields: [therapistId], references: [id])
+  userId       String?       @unique
+  user         User?         @relation(fields: [userId], references: [id])
+  fullName     String
+  age          Int?
+  recordNo     String
+  homeAddress  String?
+  appointments Appointment[]
+  sessions     Session[]
+  symptomMarks SymptomMark[]
+  routines     Routine[]
+  painLogs     PainLog[]
+  alerts       Alert[]
+}
+
+model Appointment {
+  id          String              @id @default(cuid())
+  therapistId String
+  therapist   Therapist           @relation(fields: [therapistId], references: [id])
+  patientId   String
+  patient     Patient             @relation(fields: [patientId], references: [id])
+  startsAt    DateTime
+  durationMin Int                 @default(45)
+  status      AppointmentStatus   @default(SCHEDULED)
+  location    AppointmentLocation @default(CLINIC)
+  address     String?
+  travelMin   Int?
+  reasonLabel String
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  patientId    String
+  patient      Patient  @relation(fields: [patientId], references: [id])
+  occurredAt   DateTime
+  sequenceNo   Int
+  totalPlanned Int
+  painScore    Int?
+  rotationDeg  Int?
+  note         String?
+}
+
+model SymptomMark {
+  id        String    @id @default(cuid())
+  patientId String
+  patient   Patient   @relation(fields: [patientId], references: [id])
+  sessionId String?
+  view      BodyView
+  x         Float
+  y         Float
+  zone      String
+  intensity Int
+  painType  PainType
+  createdAt DateTime  @default(now())
+}
+
+model Exercise {
+  id           String        @id @default(cuid())
+  name         String
+  description  String?
+  videoUrl     String?
+  routineItems RoutineItem[]
+}
+
+model Routine {
+  id        String        @id @default(cuid())
+  patientId String
+  patient   Patient       @relation(fields: [patientId], references: [id])
+  weekLabel String
+  items     RoutineItem[]
+  logs      RoutineLog[]
+}
+
+model RoutineItem {
+  id           String   @id @default(cuid())
+  routineId    String
+  routine      Routine  @relation(fields: [routineId], references: [id])
+  exerciseId   String
+  exercise     Exercise @relation(fields: [exerciseId], references: [id])
+  prescription String
+  order        Int
+}
+
+model RoutineLog {
+  id            String   @id @default(cuid())
+  routineId     String
+  routine       Routine  @relation(fields: [routineId], references: [id])
+  routineItemId String
+  loggedAt      DateTime @default(now())
+}
+
+model PainLog {
+  id        String   @id @default(cuid())
+  patientId String
+  patient   Patient  @relation(fields: [patientId], references: [id])
+  score     Int
+  zone      String?
+  loggedAt  DateTime @default(now())
+}
+
+model Alert {
+  id          String    @id @default(cuid())
+  therapistId String
+  patientId   String
+  patient     Patient   @relation(fields: [patientId], references: [id])
+  type        AlertType
+  message     String
+  resolvedAt  DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+model Reminder {
+  id           String          @id @default(cuid())
+  patientId    String
+  channel      ReminderChannel
+  status       ReminderStatus  @default(PENDING)
+  message      String
+  scheduledFor DateTime
+  sentAt       DateTime?
+}
