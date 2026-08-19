@@ -15,6 +15,7 @@ import {
 import { Eyebrow } from "@/components/ui";
 import { CalendarToolbar, type CalendarView } from "@/components/calendario/CalendarToolbar";
 import { WeekGrid } from "@/components/calendario/WeekGrid";
+import { DayView } from "@/components/calendario/DayView";
 import { listAppointmentsInRange, listBlocksInRange } from "@/lib/appointments";
 
 type PageProps = {
@@ -109,6 +110,13 @@ export default async function CalendarioPage({ searchParams }: PageProps) {
 
       {vista === "semana" ? (
         <WeekGrid weekStart={weekStart} appointments={weekAppointments} blocks={weekBlocks} />
+      ) : vista === "dia" ? (
+        <DayView
+          weekStart={weekStart}
+          selectedDate={fecha}
+          appointments={weekAppointments}
+          blocks={weekBlocks}
+        />
       ) : (
         <div className="mt-6 rounded-xl border border-ct-border bg-ct-surface p-6 text-sm text-ct-ink-muted">
           Vista <strong className="text-ct-ink">{vista}</strong> para el periodo con fecha de referencia{" "}

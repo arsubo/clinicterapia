@@ -18,6 +18,7 @@ export type WeekAppointment = {
   status: AppointmentStatus;
   location: AppointmentLocation;
   travelMin: number | null;
+  reasonLabel: string;
   patient: { id: string; fullName: string };
 };
 
