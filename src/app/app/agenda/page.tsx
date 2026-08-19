@@ -6,9 +6,14 @@ import {
   todayInManagua,
 } from "@/lib/datetime";
 import { averageAdherence, calculateRoutineAdherence } from "@/lib/adherence";
+import { findFreeSlots, type Interval } from "@/lib/schedule";
+import { listBlocksInRange } from "@/lib/appointments";
 import { Eyebrow, StatTile, StatusPill } from "@/components/ui";
 import { AppointmentRow } from "@/components/agenda/AppointmentRow";
 import { AgendaSidePanel } from "@/components/agenda/AgendaSidePanel";
+import { AppointmentActionsMenu } from "@/components/calendario/AppointmentActionsMenu";
+import { BlockRow, FreeSlotRow } from "@/components/calendario/ScheduleRows";
+import type { WeekBlock } from "@/components/calendario/WeekGrid";
 
 export default async function AgendaPage() {
   const session = await auth();
@@ -25,7 +30,7 @@ export default async function AgendaPage() {
   const dayStart = managuaDateTimeToUtc(year, month, day, 0, 0);
   const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000);
 
-  const [appointments, routines, alerts] = await Promise.all([
+  const [appointments, blocks, routines, alerts] = await Promise.all([
     prisma.appointment.findMany({
       where: {
         therapistId: therapist.id,
@@ -34,6 +39,7 @@ export default async function AgendaPage() {
       include: { patient: { select: { id: true, fullName: true, homeAddress: true } } },
       orderBy: { startsAt: "asc" },
     }),
+    listBlocksInRange(therapist.id, dayStart, dayEnd),
     prisma.routine.findMany({
       where: { patient: { therapistId: therapist.id } },
       include: { items: true, logs: true },
@@ -44,6 +50,19 @@ export default async function AgendaPage() {
       orderBy: { createdAt: "asc" },
     }),
   ]);
+
+  const freeSlots = findFreeSlots(dayStart, appointments, blocks);
+
+  type AgendaRow =
+    | { kind: "appointment"; at: Date; data: (typeof appointments)[number] }
+    | { kind: "block"; at: Date; data: WeekBlock }
+    | { kind: "free"; at: Date; data: Interval };
+
+  const agendaRows: AgendaRow[] = [
+    ...appointments.map((data): AgendaRow => ({ kind: "appointment", at: data.startsAt, data })),
+    ...blocks.map((data): AgendaRow => ({ kind: "block", at: data.startsAt, data })),
+    ...freeSlots.map((data): AgendaRow => ({ kind: "free", at: data.start, data })),
+  ].sort((a, b) => a.at.getTime() - b.at.getTime());
 
   const pendingAlertsCount = alerts.length;
 
@@ -126,18 +145,25 @@ export default async function AgendaPage() {
 
       <div className="mt-6 md:grid md:grid-cols-3 md:items-start md:gap-6">
         <div className="space-y-3 md:col-span-2">
-          {appointments.map((appt) => (
-            <AppointmentRow
-              key={appt.id}
-              patientId={appt.patient.id}
-              patientName={appt.patient.fullName}
-              reasonLabel={appt.reasonLabel}
-              startsAt={appt.startsAt}
-              status={appt.status}
-              location={appt.location}
-              isNow={nowAppointment?.id === appt.id}
-            />
-          ))}
+          {agendaRows.map((row, index) => {
+            if (row.kind === "appointment") {
+              return (
+                <AppointmentRow
+                  key={row.data.id}
+                  patientId={row.data.patient.id}
+                  patientName={row.data.patient.fullName}
+                  reasonLabel={row.data.reasonLabel}
+                  startsAt={row.data.startsAt}
+                  status={row.data.status}
+                  location={row.data.location}
+                  isNow={nowAppointment?.id === row.data.id}
+                  menu={<AppointmentActionsMenu appointmentId={row.data.id} currentStatus={row.data.status} />}
+                />
+              );
+            }
+            if (row.kind === "block") return <BlockRow key={row.data.id} block={row.data} />;
+            return <FreeSlotRow key={index} interval={row.data} />;
+          })}
         </div>
 
         <div className="mt-6 hidden md:mt-0 md:block">
