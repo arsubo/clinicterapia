@@ -16,6 +16,7 @@ import { Eyebrow } from "@/components/ui";
 import { CalendarToolbar, type CalendarView } from "@/components/calendario/CalendarToolbar";
 import { WeekGrid } from "@/components/calendario/WeekGrid";
 import { DayView } from "@/components/calendario/DayView";
+import { MonthGrid, monthGridRange } from "@/components/calendario/MonthGrid";
 import { listAppointmentsInRange, listBlocksInRange } from "@/lib/appointments";
 
 type PageProps = {
@@ -74,17 +75,38 @@ export default async function CalendarioPage({ searchParams }: PageProps) {
 
   const weekStart = startOfWeekManagua(fecha);
   const weekRangeEnd = addDaysManagua(weekStart, 6);
-  const [weekAppointments, weekBlocks] = await Promise.all([
-    listAppointmentsInRange(
-      therapist.id,
-      managuaDateTimeToUtc(weekStart.year, weekStart.month, weekStart.day, 0, 0),
-      managuaDateTimeToUtc(weekRangeEnd.year, weekRangeEnd.month, weekRangeEnd.day, 0, 0),
-    ),
-    listBlocksInRange(
-      therapist.id,
-      managuaDateTimeToUtc(weekStart.year, weekStart.month, weekStart.day, 0, 0),
-      managuaDateTimeToUtc(weekRangeEnd.year, weekRangeEnd.month, weekRangeEnd.day, 0, 0),
-    ),
+  const monthRange = monthGridRange(fecha);
+  const monthRangeEnd = addDaysManagua(monthRange.end, 1);
+
+  const [weekAppointments, weekBlocks, monthAppointments, monthBlocks] = await Promise.all([
+    vista === "mes"
+      ? Promise.resolve([])
+      : listAppointmentsInRange(
+          therapist.id,
+          managuaDateTimeToUtc(weekStart.year, weekStart.month, weekStart.day, 0, 0),
+          managuaDateTimeToUtc(weekRangeEnd.year, weekRangeEnd.month, weekRangeEnd.day, 0, 0),
+        ),
+    vista === "mes"
+      ? Promise.resolve([])
+      : listBlocksInRange(
+          therapist.id,
+          managuaDateTimeToUtc(weekStart.year, weekStart.month, weekStart.day, 0, 0),
+          managuaDateTimeToUtc(weekRangeEnd.year, weekRangeEnd.month, weekRangeEnd.day, 0, 0),
+        ),
+    vista === "mes"
+      ? listAppointmentsInRange(
+          therapist.id,
+          managuaDateTimeToUtc(monthRange.start.year, monthRange.start.month, monthRange.start.day, 0, 0),
+          managuaDateTimeToUtc(monthRangeEnd.year, monthRangeEnd.month, monthRangeEnd.day, 0, 0),
+        )
+      : Promise.resolve([]),
+    vista === "mes"
+      ? listBlocksInRange(
+          therapist.id,
+          managuaDateTimeToUtc(monthRange.start.year, monthRange.start.month, monthRange.start.day, 0, 0),
+          managuaDateTimeToUtc(monthRangeEnd.year, monthRangeEnd.month, monthRangeEnd.day, 0, 0),
+        )
+      : Promise.resolve([]),
   ]);
 
   return (
@@ -118,11 +140,7 @@ export default async function CalendarioPage({ searchParams }: PageProps) {
           blocks={weekBlocks}
         />
       ) : (
-        <div className="mt-6 rounded-xl border border-ct-border bg-ct-surface p-6 text-sm text-ct-ink-muted">
-          Vista <strong className="text-ct-ink">{vista}</strong> para el periodo con fecha de referencia{" "}
-          <strong className="text-ct-ink">{fechaParam}</strong>. La rejilla de citas se construye en los
-          siguientes pasos del plan.
-        </div>
+        <MonthGrid monthDate={fecha} appointments={monthAppointments} blocks={monthBlocks} />
       )}
     </div>
   );
