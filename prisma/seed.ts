@@ -185,33 +185,29 @@ async function main() {
     startedAt: daysAgo(14),
   });
 
+  // Semana del mockup (assets/tablet_calendario_semana.png): lunes 17 a
+  // sábado 22 de agosto de 2026. El entorno de desarrollo fija "hoy" en
+  // miércoles 19, día que también cubre esta semana.
+  const aug = (day: number, hour: number, minute: number) =>
+    managuaDateTimeToUtc(2026, 8, day, hour, minute);
+
   await prisma.appointment.create({
     data: {
       therapistId: therapist.id,
       patientId: andres.id,
-      startsAt: at(8, 30),
-      status: "DONE",
-      reasonLabel: "Lumbalgia · sesión 6 de 10",
+      startsAt: aug(17, 8, 30),
+      status: "CONFIRMED",
+      reasonLabel: "Lumbalgia · sesión 7 de 10",
     },
   });
 
   await prisma.appointment.create({
     data: {
       therapistId: therapist.id,
-      patientId: marta.id,
-      startsAt: at(9, 15),
-      status: "DONE",
-      reasonLabel: "Hombro · valoración inicial",
-    },
-  });
-
-  const luciaAppointment = await prisma.appointment.create({
-    data: {
-      therapistId: therapist.id,
       patientId: lucia.id,
-      startsAt: at(10, 0),
+      startsAt: aug(17, 10, 0),
       status: "CONFIRMED",
-      reasonLabel: "Cervicalgia · sesión 4 de 8",
+      reasonLabel: "Cervicalgia · sesión 5 de 8",
     },
   });
 
@@ -219,9 +215,9 @@ async function main() {
     data: {
       therapistId: therapist.id,
       patientId: javier.id,
-      startsAt: at(11, 0),
+      startsAt: aug(17, 11, 0),
       status: "SCHEDULED",
-      reasonLabel: "Rodilla · postoperatorio · semana 3",
+      reasonLabel: "Rodilla · postoperatorio · semana 4",
     },
   });
 
@@ -229,9 +225,10 @@ async function main() {
     data: {
       therapistId: therapist.id,
       patientId: nuria.id,
-      startsAt: at(12, 0),
+      startsAt: aug(17, 12, 0),
+      durationMin: 60,
       status: "UNCONFIRMED",
-      reasonLabel: "Fascitis · sesión 2 de 8",
+      reasonLabel: "Fascitis · sesión 3 de 8",
     },
   });
 
@@ -239,7 +236,7 @@ async function main() {
     data: {
       therapistId: therapist.id,
       patientId: tomas.id,
-      startsAt: at(16, 0),
+      startsAt: aug(17, 16, 0),
       status: "CONFIRMED",
       reasonLabel: "Epicondilitis · alta prevista",
     },
@@ -249,12 +246,189 @@ async function main() {
     data: {
       therapistId: therapist.id,
       patientId: carmen.id,
-      startsAt: at(17, 30),
+      startsAt: aug(17, 17, 30),
       status: "CONFIRMED",
       location: "HOME",
       address: carmen.homeAddress ?? undefined,
       travelMin: 18,
       reasonLabel: "Domicilio · C/ Salitre 14",
+    },
+  });
+
+  await prisma.appointment.create({
+    data: {
+      therapistId: therapist.id,
+      patientId: tomas.id,
+      startsAt: aug(18, 10, 0),
+      status: "CONFIRMED",
+      reasonLabel: "Epicondilitis · alta prevista",
+    },
+  });
+
+  await prisma.appointment.create({
+    data: {
+      therapistId: therapist.id,
+      patientId: andres.id,
+      startsAt: aug(18, 16, 30),
+      status: "SCHEDULED",
+      reasonLabel: "Lumbalgia · sesión 8 de 10",
+    },
+  });
+
+  await prisma.appointment.create({
+    data: {
+      therapistId: therapist.id,
+      patientId: marta.id,
+      startsAt: aug(19, 8, 30),
+      status: "DONE",
+      reasonLabel: "Hombro · seguimiento",
+    },
+  });
+
+  const luciaAppointment = await prisma.appointment.create({
+    data: {
+      therapistId: therapist.id,
+      patientId: lucia.id,
+      startsAt: aug(19, 10, 30),
+      status: "CONFIRMED",
+      reasonLabel: "Cervicalgia · sesión 6 de 8",
+    },
+  });
+
+  await prisma.appointment.create({
+    data: {
+      therapistId: therapist.id,
+      patientId: javier.id,
+      startsAt: aug(19, 12, 30),
+      status: "SCHEDULED",
+      reasonLabel: "Rodilla · postoperatorio · semana 4",
+    },
+  });
+
+  await prisma.appointment.create({
+    data: {
+      therapistId: therapist.id,
+      patientId: carmen.id,
+      startsAt: aug(19, 17, 30),
+      status: "CONFIRMED",
+      location: "HOME",
+      address: carmen.homeAddress ?? undefined,
+      travelMin: 18,
+      reasonLabel: "Domicilio · C/ Salitre 14",
+    },
+  });
+
+  await prisma.appointment.create({
+    data: {
+      therapistId: therapist.id,
+      patientId: andres.id,
+      startsAt: aug(20, 8, 30),
+      status: "CONFIRMED",
+      reasonLabel: "Lumbalgia · sesión 9 de 10",
+    },
+  });
+
+  await prisma.appointment.create({
+    data: {
+      therapistId: therapist.id,
+      patientId: tomas.id,
+      startsAt: aug(20, 16, 0),
+      status: "CONFIRMED",
+      reasonLabel: "Epicondilitis · alta prevista",
+    },
+  });
+
+  await prisma.appointment.create({
+    data: {
+      therapistId: therapist.id,
+      patientId: nuria.id,
+      startsAt: aug(21, 10, 0),
+      status: "CONFIRMED",
+      reasonLabel: "Fascitis · sesión 4 de 8",
+    },
+  });
+
+  await prisma.calendarBlock.create({
+    data: {
+      therapistId: therapist.id,
+      startsAt: aug(21, 17, 0),
+      durationMin: 60,
+      label: "Cierre de caja",
+    },
+  });
+
+  await prisma.appointment.create({
+    data: {
+      therapistId: therapist.id,
+      patientId: marta.id,
+      startsAt: aug(22, 12, 0),
+      status: "CONFIRMED",
+      reasonLabel: "Hombro · seguimiento",
+    },
+  });
+
+  // Semana anterior y semana siguiente, para que la vista Mes tenga
+  // contenido real más allá de la semana del mockup.
+  await prisma.appointment.create({
+    data: {
+      therapistId: therapist.id,
+      patientId: andres.id,
+      startsAt: aug(10, 8, 30),
+      status: "DONE",
+      reasonLabel: "Lumbalgia · sesión 5 de 10",
+    },
+  });
+
+  await prisma.appointment.create({
+    data: {
+      therapistId: therapist.id,
+      patientId: lucia.id,
+      startsAt: aug(12, 10, 0),
+      status: "DONE",
+      reasonLabel: "Cervicalgia · sesión 4 de 8",
+    },
+  });
+
+  await prisma.appointment.create({
+    data: {
+      therapistId: therapist.id,
+      patientId: carmen.id,
+      startsAt: aug(14, 17, 30),
+      status: "DONE",
+      location: "HOME",
+      address: carmen.homeAddress ?? undefined,
+      travelMin: 18,
+      reasonLabel: "Domicilio · C/ Salitre 14",
+    },
+  });
+
+  await prisma.appointment.create({
+    data: {
+      therapistId: therapist.id,
+      patientId: javier.id,
+      startsAt: aug(24, 11, 0),
+      status: "SCHEDULED",
+      reasonLabel: "Rodilla · postoperatorio · semana 5",
+    },
+  });
+
+  await prisma.appointment.create({
+    data: {
+      therapistId: therapist.id,
+      patientId: nuria.id,
+      startsAt: aug(26, 12, 0),
+      status: "SCHEDULED",
+      reasonLabel: "Fascitis · sesión 5 de 8",
+    },
+  });
+
+  await prisma.appointment.create({
+    data: {
+      therapistId: therapist.id,
+      patientId: tomas.id,
+      startsAt: aug(28, 16, 0),
+      status: "SCHEDULED",
+      reasonLabel: "Epicondilitis · alta prevista",
     },
   });
 
@@ -517,7 +691,8 @@ async function main() {
   console.log("Seed completo.");
   console.log(`Terapeuta: ${therapistUser.email} / ${THERAPIST_PASSWORD}`);
   console.log(`Pacientes (misma contraseña): ${PATIENT_PASSWORD}`);
-  console.log(`Cita "ahora": Lucía Ferrer a las ${luciaAppointment.startsAt.toISOString()}`);
+  console.log(`Semana del calendario: 17–22 de agosto de 2026 (hoy: miércoles 19).`);
+  console.log(`Cita de Lucía Ferrer el miércoles: ${luciaAppointment.startsAt.toISOString()}`);
 }
 
 main()
