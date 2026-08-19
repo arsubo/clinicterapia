@@ -57,12 +57,22 @@ const SHORT_WEEKDAY_FORMATTER = new Intl.DateTimeFormat("es-NI", {
   weekday: "short",
 });
 
+const SHORT_DATE_FORMATTER = new Intl.DateTimeFormat("es-NI", {
+  timeZone: MANAGUA_TZ,
+  day: "numeric",
+  month: "short",
+});
+
 export function formatTimeManagua(date: Date): string {
   return TIME_FORMATTER.format(date);
 }
 
 export function formatShortWeekdayManagua(date: Date): string {
   return SHORT_WEEKDAY_FORMATTER.format(date).replace(".", "");
+}
+
+export function formatShortDateManagua(date: Date): string {
+  return SHORT_DATE_FORMATTER.format(date).replace(".", "");
 }
 
 export function isSameDayManagua(date: Date, reference: { year: number; month: number; day: number }): boolean {
