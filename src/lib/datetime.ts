@@ -1,13 +1,22 @@
 export const MANAGUA_TZ = "America/Managua";
 const MANAGUA_OFFSET_MINUTES = -360; // UTC-6, sin horario de verano
 
-export function todayInManagua(): { year: number; month: number; day: number } {
-  const managuaNow = new Date(Date.now() + MANAGUA_OFFSET_MINUTES * 60000);
+export function managuaDateParts(date: Date): { year: number; month: number; day: number } {
+  const managuaDate = new Date(date.getTime() + MANAGUA_OFFSET_MINUTES * 60000);
   return {
-    year: managuaNow.getUTCFullYear(),
-    month: managuaNow.getUTCMonth() + 1,
-    day: managuaNow.getUTCDate(),
+    year: managuaDate.getUTCFullYear(),
+    month: managuaDate.getUTCMonth() + 1,
+    day: managuaDate.getUTCDate(),
   };
+}
+
+export function todayInManagua(): { year: number; month: number; day: number } {
+  return managuaDateParts(new Date());
+}
+
+export function formatDateInputManagua(date: Date): string {
+  const { year, month, day } = managuaDateParts(date);
+  return `${String(year).padStart(4, "0")}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
 export function managuaDateTimeToUtc(

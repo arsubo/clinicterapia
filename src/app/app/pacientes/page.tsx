@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { listPatients, type PatientFilter } from "@/lib/patients";
@@ -92,6 +93,24 @@ export default async function PacientesPage({ searchParams }: PageProps) {
           </>
         )}
       </div>
+
+      <Link
+        href="/app/pacientes/nuevo"
+        aria-label="Nuevo paciente"
+        className="fixed bottom-24 right-4 flex h-14 w-14 items-center justify-center rounded-full bg-ct-primary text-white shadow-lg transition-colors hover:bg-ct-primary-deep md:bottom-8 md:right-8"
+      >
+        <svg
+          className="h-6 w-6"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+      </Link>
     </div>
   );
 }
