@@ -304,6 +304,78 @@ async function main() {
     ],
   });
 
+  const [estiramientoCervical, fortalecimientoCore, movilidadHombro, bandaRodilla] =
+    await Promise.all([
+      prisma.exercise.create({
+        data: { name: "Estiramiento cervical", description: "Flexión lateral sostenida 20s por lado." },
+      }),
+      prisma.exercise.create({
+        data: { name: "Fortalecimiento de core", description: "Plancha frontal con apoyo en antebrazos." },
+      }),
+      prisma.exercise.create({
+        data: { name: "Movilidad de hombro", description: "Circunducción con bastón, 2 series de 10." },
+      }),
+      prisma.exercise.create({
+        data: { name: "Banda elástica de rodilla", description: "Extensión de rodilla con banda, 3 series de 12." },
+      }),
+    ]);
+
+  const routineLogCounts: Record<string, number> = {
+    [andres.id]: 5,
+    [marta.id]: 6,
+    [lucia.id]: 4,
+    [javier.id]: 2,
+    [nuria.id]: 5,
+    [tomas.id]: 6,
+    [carmen.id]: 5,
+  };
+
+  for (const patient of [andres, marta, lucia, javier, nuria, tomas, carmen]) {
+    const routine = await prisma.routine.create({
+      data: {
+        patientId: patient.id,
+        weekLabel: "Semana del 17 al 23 de agosto",
+      },
+    });
+
+    const items = await Promise.all([
+      prisma.routineItem.create({
+        data: {
+          routineId: routine.id,
+          exerciseId: estiramientoCervical.id,
+          prescription: "2 series de 10, 3 veces por semana",
+          order: 1,
+        },
+      }),
+      prisma.routineItem.create({
+        data: {
+          routineId: routine.id,
+          exerciseId:
+            patient.id === carmen.id
+              ? bandaRodilla.id
+              : patient.id === javier.id
+                ? bandaRodilla.id
+                : patient.id === nuria.id
+                  ? movilidadHombro.id
+                  : fortalecimientoCore.id,
+          prescription: "3 series de 12, 3 veces por semana",
+          order: 2,
+        },
+      }),
+    ]);
+
+    const logCount = routineLogCounts[patient.id] ?? 0;
+    for (let i = 0; i < logCount; i += 1) {
+      await prisma.routineLog.create({
+        data: {
+          routineId: routine.id,
+          routineItemId: items[i % items.length].id,
+          loggedAt: new Date(at(9, 0).getTime() - i * 24 * 60 * 60 * 1000),
+        },
+      });
+    }
+  }
+
   console.log("Seed completo.");
   console.log(`Terapeuta: ${therapistUser.email} / ${THERAPIST_PASSWORD}`);
   console.log(`Pacientes (misma contraseña): ${PATIENT_PASSWORD}`);
