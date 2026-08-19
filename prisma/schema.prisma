@@ -58,14 +58,19 @@ enum AlertType {
   DISCHARGE_DUE
 }
 
+enum PatientStatus {
+  ACTIVE
+  DISCHARGED
+}
+
 model User {
-  id           String    @id @default(cuid())
-  email        String    @unique
+  id           String     @id @default(cuid())
+  email        String     @unique
   passwordHash String
   role         Role
   therapist    Therapist?
   patient      Patient?
-  createdAt    DateTime  @default(now())
+  createdAt    DateTime   @default(now())
 }
 
 model Therapist {
@@ -79,21 +84,28 @@ model Therapist {
 }
 
 model Patient {
-  id           String        @id @default(cuid())
-  therapistId  String
-  therapist    Therapist     @relation(fields: [therapistId], references: [id])
-  userId       String?       @unique
-  user         User?         @relation(fields: [userId], references: [id])
-  fullName     String
-  age          Int?
-  recordNo     String
-  homeAddress  String?
-  appointments Appointment[]
-  sessions     Session[]
-  symptomMarks SymptomMark[]
-  routines     Routine[]
-  painLogs     PainLog[]
-  alerts       Alert[]
+  id              String        @id @default(cuid())
+  therapistId     String
+  therapist       Therapist     @relation(fields: [therapistId], references: [id])
+  userId          String?       @unique
+  user            User?         @relation(fields: [userId], references: [id])
+  fullName        String
+  age             Int?
+  recordNo        String
+  homeAddress     String?
+  status          PatientStatus @default(ACTIVE)
+  diagnosis       String?
+  phone           String?
+  contactEmail    String?
+  plannedSessions Int?
+  notes           String?
+  startedAt       DateTime?
+  appointments    Appointment[]
+  sessions        Session[]
+  symptomMarks    SymptomMark[]
+  routines        Routine[]
+  painLogs        PainLog[]
+  alerts          Alert[]
 }
 
 model Appointment {
@@ -124,9 +136,9 @@ model Session {
 }
 
 model SymptomMark {
-  id        String    @id @default(cuid())
+  id        String   @id @default(cuid())
   patientId String
-  patient   Patient   @relation(fields: [patientId], references: [id])
+  patient   Patient  @relation(fields: [patientId], references: [id])
   sessionId String?
   view      BodyView
   x         Float
@@ -134,7 +146,7 @@ model SymptomMark {
   zone      String
   intensity Int
   painType  PainType
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 }
 
 model Exercise {

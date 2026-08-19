@@ -79,9 +79,12 @@ export function AppointmentRow({
               Ahora · {formatTimeManagua(startsAt)}
             </p>
           )}
-          <p className="truncate font-[family-name:var(--font-outfit)] text-base font-semibold text-ct-ink">
+          <Link
+            href={`/app/pacientes/${patientId}`}
+            className="block truncate font-[family-name:var(--font-outfit)] text-base font-semibold text-ct-ink hover:text-ct-primary-deep hover:underline"
+          >
             {patientName}
-          </p>
+          </Link>
           <p className="truncate text-sm text-ct-ink-muted">{reasonLabel}</p>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1.5">

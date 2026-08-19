@@ -13,7 +13,7 @@ The seed data (`prisma/seed.ts`) models one example therapist, César Fonseca, a
   - **Database:** Prisma ORM with PostgreSQL (Neon).
   - **Auth:** Auth.js v5 (NextAuth) with Credentials provider (`bcrypt`) and JWT sessions.
 - **Architecture:** Spec-driven development. Features are defined in `specs/` before implementation.
-- **Status:** SPEC 01 (foundation, design system, auth, agenda) is implemented. See `specs/00-roadmap.md` for what's next.
+- **Status:** SPEC 01 (foundation, design system, auth, agenda) is implemented. SPEC 02 (patient list, patient record shell, Resumen and Sesiones tabs) has its implementation plan complete on branch `spec-02-pacientes-y-expediente-clinico`, pending final acceptance-criteria sign-off. See `specs/00-roadmap.md` for what's next.
 
 ## Building and Running
 
@@ -40,7 +40,7 @@ The seed data (`prisma/seed.ts`) models one example therapist, César Fonseca, a
 ### 1. Localization & Timezone
 - **Fixed locale:** `es-NI`.
 - **Fixed timezone:** `America/Managua` (UTC-6, no DST).
-- **Rule:** ALWAYS format dates/times through `src/lib/datetime.ts` (`formatTimeManagua`, `formatWeekdayDateManagua`, `managuaDateTimeToUtc`, `todayInManagua`). Never use `Date.prototype.toLocaleString()`/`getHours()`/etc. without an explicit `timeZone`, and never rely on the server's local time or `TZ` env var — the whole point of this helper is to be immune to it.
+- **Rule:** ALWAYS format dates/times through `src/lib/datetime.ts` (`formatTimeManagua`, `formatWeekdayDateManagua`, `formatShortWeekdayManagua`, `formatShortDateManagua`, `formatDateInputManagua`, `managuaDateTimeToUtc`, `managuaDateParts`, `todayInManagua`, `isSameDayManagua`). Never use `Date.prototype.toLocaleString()`/`getHours()`/etc. without an explicit `timeZone`, and never rely on the server's local time or `TZ` env var — the whole point of this helper is to be immune to it.
 
 ### 2. Data Access & Security
 - **Therapist isolation:** all clinical data MUST be scoped to `therapistId` (directly or via `patient.therapistId`). No query should omit that filter.
@@ -50,7 +50,7 @@ The seed data (`prisma/seed.ts`) models one example therapist, César Fonseca, a
 
 ### 3. UI & Design System
 - **Components:** reusable UI primitives live in `src/components/ui/` (`Card`, `StatTile`, `StatusPill`, `Button`, `Eyebrow`, `Avatar`, `SectionHeader`, `EmptyState`).
-- **Feature components:** grouped by domain, e.g. `src/components/agenda/`, `src/components/shell/` (the `AppShell` nav).
+- **Feature components:** grouped by domain, e.g. `src/components/agenda/`, `src/components/shell/` (the `AppShell` nav), `src/components/pacientes/` (list toolbar/row, record tabs, session history/forms).
 - **Design tokens:** CSS variables in `src/app/globals.css` (`--ct-primary`, `--ct-bg-page`, `--ct-rail-dark`, etc.), re-exposed as Tailwind utilities via `@theme inline`.
 - **Visual reference:** the `/design` route renders every token and primitive for comparison against `assets/*.png` mockups.
 - **Typography:** Outfit (headings), Inter (body), IBM Plex Mono (hours, eyebrows — uppercase + letter-spacing).
@@ -65,10 +65,11 @@ The seed data (`prisma/seed.ts`) models one example therapist, César Fonseca, a
 ## Project Structure
 
 - `src/app/`: Next.js pages and layouts (`app/acceso`, `app/app/*` routes for the therapist, `app/api/auth` for Auth.js).
+  - `app/app/pacientes/`: patient list (`page.tsx`), create form (`nuevo/`), and the patient record (`[id]/`) — a shared `layout.tsx` (header + tab bar) wrapping one `page.tsx` per tab (`Resumen` at the segment root, `sesiones/`, `sintomas/`, `rutina/`, `citas/`) plus `[id]/editar/`. `actions.ts` holds the Server Actions for patient and session CRUD.
 - `src/middleware.ts`: route protection — see the location warning above.
 - `src/components/ui/`: shared UI primitives.
-- `src/components/{agenda,shell}/`: feature-specific components.
-- `src/lib/`: shared utilities — `prisma.ts` (client singleton), `auth.ts`/`auth.config.ts` (Auth.js), `datetime.ts` (Managua-fixed formatting), `adherence.ts` (routine adherence calculation).
+- `src/components/{agenda,shell,pacientes}/`: feature-specific components.
+- `src/lib/`: shared utilities — `prisma.ts` (client singleton), `auth.ts`/`auth.config.ts` (Auth.js), `datetime.ts` (Managua-fixed formatting), `adherence.ts` (routine adherence calculation), `patients.ts` (`listPatients`/`getPatientById`, always scoped by `therapistId`).
 - `prisma/`: `schema.prisma` (full MVP schema, several tables unused until later specs), `seed.ts`, `migrations/`.
 - `specs/`: roadmap and per-feature specs (objective, scope, data model, plan, acceptance criteria, decisions).
 - `assets/`: mockup PNGs used as the visual source of truth.
