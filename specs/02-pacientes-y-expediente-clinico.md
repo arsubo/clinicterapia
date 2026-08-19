@@ -1,6 +1,6 @@
 # SPEC 02 — Pacientes y expediente clínico
 
-> **Estado:** Borrador
+> **Estado:** Aprobado
 > **Depende de:** SPEC 01
 > **Fecha:** 2026-08-18
 > **Objetivo:** Construir el listado de pacientes con búsqueda y filtros, y la ficha de expediente con resumen clínico e historial de sesiones editable.
