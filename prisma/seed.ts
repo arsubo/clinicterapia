@@ -49,12 +49,21 @@ async function main() {
     },
   });
 
+  const daysAgo = (n: number) => new Date(at(9, 0).getTime() - n * 24 * 60 * 60 * 1000);
+
   async function createPatient(input: {
     email: string;
     fullName: string;
     age: number;
     recordNo: string;
     homeAddress?: string;
+    status?: "ACTIVE" | "DISCHARGED";
+    diagnosis?: string;
+    phone?: string;
+    contactEmail?: string;
+    plannedSessions?: number;
+    notes?: string;
+    startedAt?: Date;
   }) {
     const user = await prisma.user.create({
       data: {
@@ -72,6 +81,13 @@ async function main() {
         age: input.age,
         recordNo: input.recordNo,
         homeAddress: input.homeAddress,
+        status: input.status ?? "ACTIVE",
+        diagnosis: input.diagnosis,
+        phone: input.phone,
+        contactEmail: input.contactEmail,
+        plannedSessions: input.plannedSessions,
+        notes: input.notes,
+        startedAt: input.startedAt,
       },
     });
   }
@@ -81,6 +97,12 @@ async function main() {
     fullName: "Andrés Molina",
     age: 47,
     recordNo: "0388",
+    diagnosis: "Lumbalgia mecánica",
+    phone: "+505 8811 2233",
+    contactEmail: "andres.molina@correo.ni",
+    plannedSessions: 10,
+    notes: "Trabajo de oficina, el dolor irradia a la pierna derecha tras jornadas largas sentado.",
+    startedAt: daysAgo(42),
   });
 
   const marta = await createPatient({
@@ -88,6 +110,13 @@ async function main() {
     fullName: "Marta Sanz",
     age: 52,
     recordNo: "0401",
+    status: "DISCHARGED",
+    diagnosis: "Hombro congelado",
+    phone: "+505 8822 3344",
+    contactEmail: "marta.sanz@correo.ni",
+    plannedSessions: 12,
+    notes: "Alta tras completar el plan de movilidad de hombro.",
+    startedAt: daysAgo(90),
   });
 
   const lucia = await createPatient({
@@ -95,6 +124,12 @@ async function main() {
     fullName: "Lucía Ferrer",
     age: 34,
     recordNo: "0412",
+    diagnosis: "Cervicalgia postural",
+    phone: "+505 8833 4455",
+    contactEmail: "lucia.ferrer@correo.ni",
+    plannedSessions: 8,
+    notes: "Trabajo remoto con jornadas largas frente al ordenador.",
+    startedAt: daysAgo(21),
   });
 
   const javier = await createPatient({
@@ -102,6 +137,12 @@ async function main() {
     fullName: "Javier Ortega",
     age: 29,
     recordNo: "0420",
+    diagnosis: "Postoperatorio de rodilla (LCA)",
+    phone: "+505 8844 5566",
+    contactEmail: "javier.ortega@correo.ni",
+    plannedSessions: 12,
+    notes: "Semana 3 post-cirugía, adherencia baja a la rutina asignada.",
+    startedAt: daysAgo(21),
   });
 
   const nuria = await createPatient({
@@ -109,6 +150,12 @@ async function main() {
     fullName: "Nuria Beltrán",
     age: 41,
     recordNo: "0433",
+    diagnosis: "Fascitis plantar",
+    phone: "+505 8855 6677",
+    contactEmail: "nuria.beltran@correo.ni",
+    plannedSessions: 8,
+    notes: "Corredora recreativa, dolor matutino en el talón.",
+    startedAt: daysAgo(7),
   });
 
   const tomas = await createPatient({
@@ -116,6 +163,12 @@ async function main() {
     fullName: "Tomás Iglesias",
     age: 58,
     recordNo: "0447",
+    diagnosis: "Epicondilitis lateral",
+    phone: "+505 8866 7788",
+    contactEmail: "tomas.iglesias@correo.ni",
+    plannedSessions: 6,
+    notes: "Alta prevista en las próximas dos semanas.",
+    startedAt: daysAgo(60),
   });
 
   const carmen = await createPatient({
@@ -124,6 +177,12 @@ async function main() {
     age: 65,
     recordNo: "0459",
     homeAddress: "C/ Salitre 14, 2°B",
+    diagnosis: "Rehabilitación domiciliaria post-fractura de cadera",
+    phone: "+505 8877 8899",
+    contactEmail: "carmen.ruiz@correo.ni",
+    plannedSessions: 10,
+    notes: "Movilidad reducida; requiere atención a domicilio.",
+    startedAt: daysAgo(14),
   });
 
   await prisma.appointment.create({
