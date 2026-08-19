@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 import type { ComponentType, ReactNode } from "react";
+import { Avatar } from "@/components/ui";
 import {
   ActivityIcon,
   AgendaIcon,
@@ -11,6 +13,15 @@ import {
   SettingsIcon,
   UsersIcon,
 } from "./icons";
+
+function initials(fullName: string) {
+  return fullName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
 
 type NavItem = {
   href: string;
@@ -38,15 +49,16 @@ const NAV_ITEMS: NavItem[] = [
 type AppShellProps = {
   children: ReactNode;
   pendingAlertsCount: number;
+  therapistName: string;
 };
 
-export function AppShell({ children, pendingAlertsCount }: AppShellProps) {
+export function AppShell({ children, pendingAlertsCount, therapistName }: AppShellProps) {
   const pathname = usePathname();
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <div className="min-h-screen bg-ct-bg-page md:flex">
-      <aside className="hidden w-60 shrink-0 flex-col bg-ct-rail-dark px-4 py-6 md:flex">
+      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col overflow-y-auto bg-ct-rail-dark px-4 py-6 md:flex">
         <div className="px-2">
           <p className="font-[family-name:var(--font-outfit)] text-xl font-semibold text-white">
             Pauta
@@ -84,9 +96,41 @@ export function AppShell({ children, pendingAlertsCount }: AppShellProps) {
             );
           })}
         </nav>
+
+        {therapistName && (
+          <div className="mt-4 flex items-center gap-3 border-t border-white/10 px-2 pt-4">
+            <Avatar initials={initials(therapistName)} tone="primary" size="sm" />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-white">{therapistName}</p>
+              <button
+                type="button"
+                onClick={() => signOut({ callbackUrl: "/acceso" })}
+                className="text-xs text-white/60 transition-colors hover:text-white"
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          </div>
+        )}
       </aside>
 
       <div className="flex min-h-screen flex-1 flex-col">
+        {therapistName && (
+          <header className="flex items-center justify-between border-b border-ct-border bg-ct-surface px-4 py-3 md:hidden">
+            <div className="flex items-center gap-2">
+              <Avatar initials={initials(therapistName)} tone="primary" size="sm" />
+              <span className="truncate text-sm font-medium text-ct-ink">{therapistName}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => signOut({ callbackUrl: "/acceso" })}
+              className="text-xs font-medium text-ct-ink-muted transition-colors hover:text-ct-primary-deep"
+            >
+              Cerrar sesión
+            </button>
+          </header>
+        )}
+
         <main className="flex-1 pb-20 md:pb-0">{children}</main>
 
         <nav className="fixed inset-x-0 bottom-0 z-10 flex items-center justify-around border-t border-ct-border bg-ct-surface px-2 py-2 md:hidden">

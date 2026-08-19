@@ -8,6 +8,7 @@ import {
 import { averageAdherence, calculateRoutineAdherence } from "@/lib/adherence";
 import { Eyebrow, StatTile, StatusPill } from "@/components/ui";
 import { AppointmentRow } from "@/components/agenda/AppointmentRow";
+import { AgendaSidePanel } from "@/components/agenda/AgendaSidePanel";
 
 export default async function AgendaPage() {
   const session = await auth();
@@ -24,23 +25,27 @@ export default async function AgendaPage() {
   const dayStart = managuaDateTimeToUtc(year, month, day, 0, 0);
   const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000);
 
-  const [appointments, routines, pendingAlertsCount] = await Promise.all([
+  const [appointments, routines, alerts] = await Promise.all([
     prisma.appointment.findMany({
       where: {
         therapistId: therapist.id,
         startsAt: { gte: dayStart, lt: dayEnd },
       },
-      include: { patient: { select: { id: true, fullName: true } } },
+      include: { patient: { select: { id: true, fullName: true, homeAddress: true } } },
       orderBy: { startsAt: "asc" },
     }),
     prisma.routine.findMany({
       where: { patient: { therapistId: therapist.id } },
       include: { items: true, logs: true },
     }),
-    prisma.alert.count({
+    prisma.alert.findMany({
       where: { therapistId: therapist.id, resolvedAt: null },
+      select: { id: true, type: true, message: true },
+      orderBy: { createdAt: "asc" },
     }),
   ]);
+
+  const pendingAlertsCount = alerts.length;
 
   const nowAppointment = appointments.find(
     (appt) => appt.status !== "DONE" && appt.status !== "CANCELLED" && appt.status !== "NO_SHOW",
@@ -62,6 +67,17 @@ export default async function AgendaPage() {
 
   const dateLabel = formatWeekdayDateManagua(appointments[0]?.startsAt ?? dayStart);
   const firstName = therapist.fullName.split(" ")[0];
+
+  const homeAppointment = appointments.find((appt) => appt.location === "HOME");
+  const homeVisit = homeAppointment
+    ? {
+        patientName: homeAppointment.patient.fullName,
+        address:
+          homeAppointment.address ?? homeAppointment.patient.homeAddress ?? "Sin dirección",
+        startsAt: homeAppointment.startsAt,
+        travelMin: homeAppointment.travelMin ?? 0,
+      }
+    : null;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 md:max-w-5xl md:px-8 md:py-8">
@@ -108,19 +124,25 @@ export default async function AgendaPage() {
         </div>
       </div>
 
-      <div className="mt-6 space-y-3">
-        {appointments.map((appt) => (
-          <AppointmentRow
-            key={appt.id}
-            patientId={appt.patient.id}
-            patientName={appt.patient.fullName}
-            reasonLabel={appt.reasonLabel}
-            startsAt={appt.startsAt}
-            status={appt.status}
-            location={appt.location}
-            isNow={nowAppointment?.id === appt.id}
-          />
-        ))}
+      <div className="mt-6 md:grid md:grid-cols-3 md:items-start md:gap-6">
+        <div className="space-y-3 md:col-span-2">
+          {appointments.map((appt) => (
+            <AppointmentRow
+              key={appt.id}
+              patientId={appt.patient.id}
+              patientName={appt.patient.fullName}
+              reasonLabel={appt.reasonLabel}
+              startsAt={appt.startsAt}
+              status={appt.status}
+              location={appt.location}
+              isNow={nowAppointment?.id === appt.id}
+            />
+          ))}
+        </div>
+
+        <div className="mt-6 hidden md:mt-0 md:block">
+          <AgendaSidePanel alerts={alerts} homeVisit={homeVisit} />
+        </div>
       </div>
     </div>
   );

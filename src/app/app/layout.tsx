@@ -9,7 +9,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   const therapist = session?.user
     ? await prisma.therapist.findUnique({
         where: { userId: session.user.id },
-        select: { id: true },
+        select: { id: true, fullName: true },
       })
     : null;
 
@@ -19,5 +19,12 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       })
     : 0;
 
-  return <AppShell pendingAlertsCount={pendingAlertsCount}>{children}</AppShell>;
+  return (
+    <AppShell
+      pendingAlertsCount={pendingAlertsCount}
+      therapistName={therapist?.fullName ?? ""}
+    >
+      {children}
+    </AppShell>
+  );
 }
