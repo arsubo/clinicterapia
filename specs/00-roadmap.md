@@ -1,6 +1,6 @@
 # Roadmap de specs — ClinicTerapia
 
-> Índice de las specs planeadas para el MVP de ClinicTerapia by César Fonseca. Cada una se escribe con `/spec` cuando le toca su turno; este documento solo fija el orden y las dependencias.
+> Índice de las specs planeadas para el MVP de ClinicTerapia. Cada una se escribe con `/spec` cuando le toca su turno; este documento solo fija el orden y las dependencias.
 
 | # | Spec | Objetivo en una frase | Depende de |
 |---|------|------------------------|------------|

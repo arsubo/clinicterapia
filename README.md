@@ -1,6 +1,8 @@
 # ClinicTerapia
 
-Aplicación web para la consulta de fisioterapia de César Fonseca. Centraliza en un solo sitio la agenda del día, el expediente clínico de cada paciente, el registro de dolor y síntomas por sesión, las rutinas de ejercicios en casa y las alertas que requieren atención del terapeuta — con un portal aparte donde cada paciente ve su propia rutina.
+Software de gestión para consultas de fisioterapia. Centraliza en un solo sitio la agenda del día, el expediente clínico de cada paciente, el registro de dolor y síntomas por sesión, las rutinas de ejercicios en casa y las alertas que requieren atención del terapeuta — con un portal aparte donde cada paciente ve su propia rutina.
+
+Es un producto genérico, pensado para cualquier terapeuta o clínica, no una app hecha a medida para una consulta en particular. Los datos de ejemplo del seed (el terapeuta César Fonseca y sus pacientes) son solo el set de datos de desarrollo usado para construir y probar el MVP — no representan la identidad del producto.
 
 ## Estado del proyecto
 
@@ -69,3 +71,7 @@ npm run start         # sirve el build de producción
 npm run lint          # ESLint
 npm run typecheck     # chequeo de tipos con tsc
 ```
+
+## Autoría
+
+Software propiedad de **Arnoldo Suárez — Dev&Arch**.

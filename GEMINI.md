@@ -1,6 +1,8 @@
 # ClinicTerapia — Project Instructions
 
-This project is a management application for César Fonseca's physiotherapy clinic. It centralizes the daily agenda, clinical records, symptom tracking, and home exercise routines.
+This is **generic** management software for physiotherapy practices — it is not built around, owned by, or named after any single clinic or therapist. It centralizes the daily agenda, clinical records, symptom tracking, and home exercise routines.
+
+The seed data (`prisma/seed.ts`) models one example therapist, César Fonseca, and his patients. He is a **user** of the software in the dev/demo dataset, not its owner — don't frame docs, comments, or UI copy as if the product belongs to him. The software is owned and developed by **Arnoldo Suárez — Dev&Arch**.
 
 ## Project Overview
 
