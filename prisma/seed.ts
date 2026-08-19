@@ -337,6 +337,85 @@ async function main() {
     ],
   });
 
+  async function createSessionHistory(
+    patientId: string,
+    totalPlanned: number,
+    entries: { sequenceNo: number; daysAgo: number; painScore: number; note?: string }[],
+  ) {
+    return Promise.all(
+      entries.map((entry) =>
+        prisma.session.create({
+          data: {
+            patientId,
+            occurredAt: daysAgo(entry.daysAgo),
+            sequenceNo: entry.sequenceNo,
+            totalPlanned,
+            painScore: entry.painScore,
+            note: entry.note,
+          },
+        }),
+      ),
+    );
+  }
+
+  await createSessionHistory(andres.id, 10, [
+    { sequenceNo: 1, daysAgo: 35, painScore: 7 },
+    { sequenceNo: 2, daysAgo: 28, painScore: 6 },
+    { sequenceNo: 3, daysAgo: 21, painScore: 6 },
+    { sequenceNo: 4, daysAgo: 14, painScore: 5 },
+    { sequenceNo: 5, daysAgo: 7, painScore: 4 },
+    {
+      sequenceNo: 6,
+      daysAgo: 0,
+      painScore: 3,
+      note: "Mejora sostenida. Reduce dolor irradiado a la pierna; se mantiene el trabajo de estabilización lumbar.",
+    },
+  ]);
+
+  await createSessionHistory(javier.id, 12, [
+    { sequenceNo: 1, daysAgo: 18, painScore: 8 },
+    { sequenceNo: 2, daysAgo: 14, painScore: 7 },
+    { sequenceNo: 3, daysAgo: 10, painScore: 7 },
+    {
+      sequenceNo: 4,
+      daysAgo: 7,
+      painScore: 6,
+      note: "Semana 3 postoperatorio. Rango de flexión mejora, adherencia a la rutina sigue baja.",
+    },
+  ]);
+
+  await createSessionHistory(nuria.id, 8, [
+    {
+      sequenceNo: 1,
+      daysAgo: 7,
+      painScore: 6,
+      note: "Dolor matutino en el talón. Se añade estiramiento de fascia plantar antes de levantarse.",
+    },
+  ]);
+
+  await createSessionHistory(tomas.id, 6, [
+    { sequenceNo: 1, daysAgo: 50, painScore: 6 },
+    { sequenceNo: 2, daysAgo: 40, painScore: 5 },
+    { sequenceNo: 3, daysAgo: 30, painScore: 4 },
+    { sequenceNo: 4, daysAgo: 20, painScore: 3 },
+    {
+      sequenceNo: 5,
+      daysAgo: 10,
+      painScore: 2,
+      note: "Mejora notable, sin dolor a la palpación. Se prevé alta en la próxima cita.",
+    },
+  ]);
+
+  await createSessionHistory(carmen.id, 10, [
+    { sequenceNo: 1, daysAgo: 10, painScore: 6 },
+    {
+      sequenceNo: 2,
+      daysAgo: 4,
+      painScore: 5,
+      note: "Mejora la tolerancia a la carga en domicilio. Se mantiene apoyo con andador para distancias largas.",
+    },
+  ]);
+
   await prisma.alert.createMany({
     data: [
       {
