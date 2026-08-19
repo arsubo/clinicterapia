@@ -6,7 +6,19 @@ Aplicación web para la consulta de fisioterapia de César Fonseca. Centraliza e
 
 El proyecto se construye spec por spec siguiendo el roadmap en [`specs/00-roadmap.md`](specs/00-roadmap.md). Cada spec en `specs/` define el objetivo, el alcance y los criterios de aceptación de una parte del MVP antes de implementarla.
 
-Esta rama implementa la **SPEC 01 — Fundación, design system y acceso**: el proyecto Next.js base, el design system, el esquema de datos completo, el acceso por email/contraseña y la Agenda del día.
+**SPEC 01 — Fundación, design system y acceso** ([`specs/01-fundacion-design-system-y-acceso.md`](specs/01-fundacion-design-system-y-acceso.md)) está **Implementada**: el proyecto Next.js base, el design system, el esquema de datos completo, el acceso por email/contraseña, la navegación (`AppShell`) y la Agenda del día con datos reales.
+
+Las siguientes specs (`02` en adelante) todavía no están implementadas — ver [`specs/00-roadmap.md`](specs/00-roadmap.md).
+
+### Rutas principales
+
+| Ruta | Descripción | Acceso |
+|---|---|---|
+| `/acceso` | Login por email/contraseña | Público |
+| `/app/agenda` | Agenda del día (citas, StatTiles, alertas, visita a domicilio) | `THERAPIST` |
+| `/design` | Catálogo visual de tokens y primitivas UI | Público |
+
+`/portal/*` (portal del paciente) está reservado en el esquema de rutas y protegido por `middleware.ts`, pero su contenido se implementa en una spec futura.
 
 ## Stack técnico
 
@@ -27,6 +39,17 @@ npm run dev
 ```
 
 La app queda disponible en [http://localhost:3000](http://localhost:3000).
+
+### Datos de prueba
+
+El seed (`prisma/seed.ts`) crea un terapeuta y 7 pacientes, todos con la misma contraseña por rol:
+
+| Usuario | Email | Contraseña |
+|---|---|---|
+| Terapeuta (César Fonseca) | `cesar@pauta.clinic` | `clinicterapia123` |
+| Pacientes (Andrés, Marta, Lucía, Javier, Nuria, Tomás, Carmen) | `{nombre}@pauta.clinic` | `paciente123` |
+
+Solo `THERAPIST` tiene acceso funcional en esta spec (`/app/*`); el login de paciente existe pero su portal (`/portal/*`) aún no está implementado.
 
 ### Variables de entorno
 
