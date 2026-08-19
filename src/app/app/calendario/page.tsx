@@ -14,6 +14,8 @@ import {
 } from "@/lib/datetime";
 import { Eyebrow } from "@/components/ui";
 import { CalendarToolbar, type CalendarView } from "@/components/calendario/CalendarToolbar";
+import { WeekGrid } from "@/components/calendario/WeekGrid";
+import { listAppointmentsInRange, listBlocksInRange } from "@/lib/appointments";
 
 type PageProps = {
   searchParams: Promise<{ vista?: string; fecha?: string }>;
@@ -69,6 +71,21 @@ export default async function CalendarioPage({ searchParams }: PageProps) {
   const fechaParam = toFecha(fecha);
   const todayFecha = toFecha(todayInManagua());
 
+  const weekStart = startOfWeekManagua(fecha);
+  const weekRangeEnd = addDaysManagua(weekStart, 6);
+  const [weekAppointments, weekBlocks] = await Promise.all([
+    listAppointmentsInRange(
+      therapist.id,
+      managuaDateTimeToUtc(weekStart.year, weekStart.month, weekStart.day, 0, 0),
+      managuaDateTimeToUtc(weekRangeEnd.year, weekRangeEnd.month, weekRangeEnd.day, 0, 0),
+    ),
+    listBlocksInRange(
+      therapist.id,
+      managuaDateTimeToUtc(weekStart.year, weekStart.month, weekStart.day, 0, 0),
+      managuaDateTimeToUtc(weekRangeEnd.year, weekRangeEnd.month, weekRangeEnd.day, 0, 0),
+    ),
+  ]);
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 md:max-w-6xl md:px-8 md:py-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -90,11 +107,15 @@ export default async function CalendarioPage({ searchParams }: PageProps) {
         </div>
       </div>
 
-      <div className="mt-6 rounded-xl border border-ct-border bg-ct-surface p-6 text-sm text-ct-ink-muted">
-        Vista <strong className="text-ct-ink">{vista}</strong> para el periodo con fecha de referencia{" "}
-        <strong className="text-ct-ink">{fechaParam}</strong>. La rejilla de citas se construye en los
-        siguientes pasos del plan.
-      </div>
+      {vista === "semana" ? (
+        <WeekGrid weekStart={weekStart} appointments={weekAppointments} blocks={weekBlocks} />
+      ) : (
+        <div className="mt-6 rounded-xl border border-ct-border bg-ct-surface p-6 text-sm text-ct-ink-muted">
+          Vista <strong className="text-ct-ink">{vista}</strong> para el periodo con fecha de referencia{" "}
+          <strong className="text-ct-ink">{fechaParam}</strong>. La rejilla de citas se construye en los
+          siguientes pasos del plan.
+        </div>
+      )}
     </div>
   );
 }
