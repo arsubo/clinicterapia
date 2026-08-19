@@ -11,6 +11,7 @@ import {
 import { findFreeSlots, type Interval } from "@/lib/schedule";
 import { AppointmentRow } from "@/components/agenda/AppointmentRow";
 import { AppointmentActionsMenu } from "@/components/calendario/AppointmentActionsMenu";
+import { DraggableChip } from "@/components/calendario/DraggableChip";
 import type { WeekAppointment, WeekBlock } from "@/components/calendario/WeekGrid";
 
 type DayViewProps = {
@@ -127,17 +128,23 @@ export function DayView({ weekStart, selectedDate, appointments, blocks }: DayVi
           rows.map((row, index) => {
             if (row.kind === "appointment") {
               return (
-                <AppointmentRow
+                <DraggableChip
                   key={row.data.id}
-                  patientId={row.data.patient.id}
-                  patientName={row.data.patient.fullName}
-                  reasonLabel={row.data.reasonLabel}
-                  startsAt={row.data.startsAt}
-                  status={row.data.status}
-                  location={row.data.location}
-                  isNow={nowAppointment?.id === row.data.id}
-                  menu={<AppointmentActionsMenu appointmentId={row.data.id} currentStatus={row.data.status} />}
-                />
+                  appointmentId={row.data.id}
+                  fecha={toFecha(selectedDate)}
+                  hora={formatTimeManagua(row.data.startsAt)}
+                >
+                  <AppointmentRow
+                    patientId={row.data.patient.id}
+                    patientName={row.data.patient.fullName}
+                    reasonLabel={row.data.reasonLabel}
+                    startsAt={row.data.startsAt}
+                    status={row.data.status}
+                    location={row.data.location}
+                    isNow={nowAppointment?.id === row.data.id}
+                    menu={<AppointmentActionsMenu appointmentId={row.data.id} currentStatus={row.data.status} />}
+                  />
+                </DraggableChip>
               );
             }
             if (row.kind === "block") return <BlockRow key={row.data.id} block={row.data} />;

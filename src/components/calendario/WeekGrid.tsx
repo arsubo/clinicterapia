@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useRef } from "react";
 import type { AppointmentLocation, AppointmentStatus } from "@prisma/client";
 import {
   addDaysManagua,
@@ -10,6 +13,7 @@ import {
   type ManaguaDateParts,
 } from "@/lib/datetime";
 import { findFreeSlots, type Interval } from "@/lib/schedule";
+import { DraggableChip, type DayDropTarget } from "@/components/calendario/DraggableChip";
 
 export type WeekAppointment = {
   id: string;
@@ -122,8 +126,31 @@ function FreeSlotChip({ interval }: { interval: Interval }) {
   );
 }
 
-function DayItemChip({ item }: { item: DayItem }) {
-  if (item.kind === "appointment") return <AppointmentChip appointment={item.data} />;
+function toFecha(parts: ManaguaDateParts): string {
+  return `${String(parts.year).padStart(4, "0")}-${String(parts.month).padStart(2, "0")}-${String(parts.day).padStart(2, "0")}`;
+}
+
+function DayItemChip({
+  item,
+  fecha,
+  getDayTargets,
+}: {
+  item: DayItem;
+  fecha: string;
+  getDayTargets: () => DayDropTarget[];
+}) {
+  if (item.kind === "appointment") {
+    return (
+      <DraggableChip
+        appointmentId={item.data.id}
+        fecha={fecha}
+        hora={formatTimeManagua(item.data.startsAt)}
+        getDayTargets={getDayTargets}
+      >
+        <AppointmentChip appointment={item.data} />
+      </DraggableChip>
+    );
+  }
   if (item.kind === "block") return <BlockChip block={item.data} />;
   return <FreeSlotChip interval={item.data} />;
 }
@@ -134,6 +161,13 @@ function LegendDot({ className }: { className: string }) {
 
 export function WeekGrid({ weekStart, appointments, blocks }: WeekGridProps) {
   const days = buildDayColumns(weekStart, appointments, blocks);
+  const columnRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  function getDayTargets(): DayDropTarget[] {
+    return Object.entries(columnRefs.current)
+      .filter((entry): entry is [string, HTMLDivElement] => entry[1] !== null)
+      .map(([fecha, el]) => ({ fecha, el }));
+  }
 
   const totalAppointments = days.reduce((sum, day) => sum + day.items.filter((i) => i.kind === "appointment").length, 0);
   const totalFreeSlots = days.reduce((sum, day) => sum + day.items.filter((i) => i.kind === "free").length, 0);
@@ -141,30 +175,38 @@ export function WeekGrid({ weekStart, appointments, blocks }: WeekGridProps) {
   return (
     <div className="mt-6">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-6 md:gap-3">
-        {days.map((day) => (
-          <div
-            key={`${day.date.year}-${day.date.month}-${day.date.day}`}
-            className={day.isToday ? "rounded-xl bg-ct-primary-soft/30 p-2 -m-2" : ""}
-          >
-            <p
-              className={`font-mono text-xs uppercase tracking-[0.15em] md:text-center ${
-                day.isToday ? "text-ct-primary-deep" : "text-ct-ink-muted"
-              }`}
+        {days.map((day) => {
+          const fecha = toFecha(day.date);
+          return (
+            <div
+              key={fecha}
+              ref={(el) => {
+                columnRefs.current[fecha] = el;
+              }}
+              className={day.isToday ? "rounded-xl bg-ct-primary-soft/30 p-2 -m-2" : ""}
             >
-              {formatShortWeekdayManagua(
-                managuaDateTimeToUtc(day.date.year, day.date.month, day.date.day, 12, 0),
-              )}{" "}
-              <span className="font-semibold text-sm md:block md:text-lg">{day.date.day}</span>
-            </p>
-            <div className="mt-2 space-y-1.5">
-              {day.items.length === 0 ? (
-                <p className="text-sm text-ct-ink-muted">Sin citas</p>
-              ) : (
-                day.items.map((item, index) => <DayItemChip key={index} item={item} />)
-              )}
+              <p
+                className={`font-mono text-xs uppercase tracking-[0.15em] md:text-center ${
+                  day.isToday ? "text-ct-primary-deep" : "text-ct-ink-muted"
+                }`}
+              >
+                {formatShortWeekdayManagua(
+                  managuaDateTimeToUtc(day.date.year, day.date.month, day.date.day, 12, 0),
+                )}{" "}
+                <span className="font-semibold text-sm md:block md:text-lg">{day.date.day}</span>
+              </p>
+              <div className="mt-2 space-y-1.5">
+                {day.items.length === 0 ? (
+                  <p className="text-sm text-ct-ink-muted">Sin citas</p>
+                ) : (
+                  day.items.map((item, index) => (
+                    <DayItemChip key={index} item={item} fecha={fecha} getDayTargets={getDayTargets} />
+                  ))
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-ct-border pt-3 text-xs text-ct-ink-muted">

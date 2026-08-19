@@ -220,3 +220,45 @@ export async function setAppointmentStatus(id: string, status: AppointmentStatus
 
   revalidateCalendarViews(existing.patientId);
 }
+
+/**
+ * Reprograma una cita arrastrada: mismo `hasOverlap` que el formulario, pero
+ * sin redirigir, porque el arrastre debe dejar al terapeuta en la misma vista.
+ */
+export async function rescheduleAppointment(
+  id: string,
+  fecha: string,
+  hora: string,
+): Promise<{ error?: string }> {
+  const therapist = await requireTherapist();
+
+  const existing = await prisma.appointment.findFirst({
+    where: { id, therapistId: therapist.id },
+    select: { id: true, patientId: true, durationMin: true, location: true, travelMin: true },
+  });
+  if (!existing) notFound();
+
+  const fechaMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(fecha);
+  const horaMatch = /^(\d{2}):(\d{2})$/.exec(hora);
+  if (!fechaMatch || !horaMatch) return { error: "Fecha u hora no válidas." };
+
+  const [, year, month, day] = fechaMatch;
+  const [, hour, minute] = horaMatch;
+  const startsAt = managuaDateTimeToUtc(Number(year), Number(month), Number(day), Number(hour), Number(minute));
+
+  const candidate = {
+    startsAt,
+    durationMin: existing.durationMin,
+    location: existing.location,
+    travelMin: existing.travelMin,
+  };
+
+  if (await hasOverlap(therapist.id, candidate, id)) {
+    return { error: "Esta franja se solapa con otra cita o bloqueo existente." };
+  }
+
+  await prisma.appointment.update({ where: { id }, data: { startsAt } });
+
+  revalidateCalendarViews(existing.patientId);
+  return {};
+}
