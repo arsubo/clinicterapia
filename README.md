@@ -10,7 +10,9 @@ El proyecto se construye spec por spec siguiendo el roadmap en [`specs/00-roadma
 
 **SPEC 01 — Fundación, design system y acceso** ([`specs/01-fundacion-design-system-y-acceso.md`](specs/01-fundacion-design-system-y-acceso.md)) está **Implementada**: el proyecto Next.js base, el design system, el esquema de datos completo, el acceso por email/contraseña, la navegación (`AppShell`) y la Agenda del día con datos reales.
 
-Las siguientes specs (`02` en adelante) todavía no están implementadas — ver [`specs/00-roadmap.md`](specs/00-roadmap.md).
+**SPEC 02 — Pacientes y expediente clínico** ([`specs/02-pacientes-y-expediente-clinico.md`](specs/02-pacientes-y-expediente-clinico.md)) tiene su plan de implementación completo (rama `spec-02-pacientes-y-expediente-clinico`): listado de pacientes con búsqueda y filtros, alta/edición de paciente, y la ficha de expediente con las pestañas `Resumen` y `Sesiones` funcionales (`Síntomas`, `Rutina` y `Citas` quedan con un `EmptyState` para las specs 03 y 04).
+
+Las siguientes specs (`03` en adelante) todavía no están implementadas — ver [`specs/00-roadmap.md`](specs/00-roadmap.md).
 
 ### Rutas principales
 
@@ -18,6 +20,12 @@ Las siguientes specs (`02` en adelante) todavía no están implementadas — ver
 |---|---|---|
 | `/acceso` | Login por email/contraseña | Público |
 | `/app/agenda` | Agenda del día (citas, StatTiles, alertas, visita a domicilio) | `THERAPIST` |
+| `/app/pacientes` | Listado de pacientes: búsqueda, filtros (`Activos`/`Domicilio`/`Alta`) y agrupaciones | `THERAPIST` |
+| `/app/pacientes/nuevo` | Alta de paciente | `THERAPIST` |
+| `/app/pacientes/[id]` | Ficha del paciente — pestaña `Resumen` (StatTiles, alerta activa, evolución del dolor) | `THERAPIST` |
+| `/app/pacientes/[id]/sesiones` | Historial de sesiones, alta de sesión y edición de nota | `THERAPIST` |
+| `/app/pacientes/[id]/{sintomas,rutina,citas}` | Pestañas reservadas para las specs 03 y 04 (`EmptyState`) | `THERAPIST` |
+| `/app/pacientes/[id]/editar` | Edición de paciente | `THERAPIST` |
 | `/design` | Catálogo visual de tokens y primitivas UI | Público |
 
 `/portal/*` (portal del paciente) está reservado en el esquema de rutas y protegido por `middleware.ts`, pero su contenido se implementa en una spec futura.
