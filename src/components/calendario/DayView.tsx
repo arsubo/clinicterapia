@@ -10,6 +10,7 @@ import {
 } from "@/lib/datetime";
 import { findFreeSlots, type Interval } from "@/lib/schedule";
 import { AppointmentRow } from "@/components/agenda/AppointmentRow";
+import { AppointmentActionsMenu } from "@/components/calendario/AppointmentActionsMenu";
 import type { WeekAppointment, WeekBlock } from "@/components/calendario/WeekGrid";
 
 type DayViewProps = {
@@ -135,6 +136,7 @@ export function DayView({ weekStart, selectedDate, appointments, blocks }: DayVi
                   status={row.data.status}
                   location={row.data.location}
                   isNow={nowAppointment?.id === row.data.id}
+                  menu={<AppointmentActionsMenu appointmentId={row.data.id} currentStatus={row.data.status} />}
                 />
               );
             }
