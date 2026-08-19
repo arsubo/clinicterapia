@@ -43,8 +43,23 @@ const MONTH_FORMATTER = new Intl.DateTimeFormat("es-NI", {
   month: "long",
 });
 
+const SHORT_WEEKDAY_FORMATTER = new Intl.DateTimeFormat("es-NI", {
+  timeZone: MANAGUA_TZ,
+  weekday: "short",
+});
+
 export function formatTimeManagua(date: Date): string {
   return TIME_FORMATTER.format(date);
+}
+
+export function formatShortWeekdayManagua(date: Date): string {
+  return SHORT_WEEKDAY_FORMATTER.format(date).replace(".", "");
+}
+
+export function isSameDayManagua(date: Date, reference: { year: number; month: number; day: number }): boolean {
+  const dayStart = managuaDateTimeToUtc(reference.year, reference.month, reference.day, 0, 0);
+  const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000);
+  return date >= dayStart && date < dayEnd;
 }
 
 export function formatWeekdayDateManagua(date: Date): string {
