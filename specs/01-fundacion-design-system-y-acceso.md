@@ -259,7 +259,7 @@ Convenciones:
 ## Acceptance criteria
 
 - [x] `npm run typecheck` y `npm run lint` terminan sin errores.
-- [ ] `npx prisma migrate reset` recrea la base de datos y siembra 7 pacientes y 7 citas sin fallar. _(pendiente de correr manualmente — bloqueado para el agente por el clasificador de auto mode; `prisma db seed` sí se verificó exitoso sobre el estado actual de la base)_
+- [x] `npx prisma migrate reset` recrea la base de datos y siembra 7 pacientes y 7 citas sin fallar. _(corrido manualmente por el usuario; verificado: 7 pacientes, 7 citas, 7 rutinas, 3 alertas en la base tras el reset)_
 - [x] En `/acceso`, credenciales incorrectas muestran un error en línea y no navegan.
 - [x] Con las credenciales del seed del terapeuta, el login redirige a `/app/agenda`.
 - [x] Visitar `/app/agenda` sin sesión iniciada redirige a `/acceso`.
