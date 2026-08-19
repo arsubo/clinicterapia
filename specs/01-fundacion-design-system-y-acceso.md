@@ -1,6 +1,6 @@
 # SPEC 01 — Fundación, design system y acceso
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** —
 > **Fecha:** 2026-08-18
 > **Objetivo:** Levantar el proyecto Next.js de ClinicTerapia con su design system, su esquema de datos completo, el acceso por email/password y la Agenda del día funcional con datos reales.
@@ -258,18 +258,18 @@ Convenciones:
 
 ## Acceptance criteria
 
-- [ ] `npm run typecheck` y `npm run lint` terminan sin errores.
-- [ ] `npx prisma migrate reset` recrea la base de datos y siembra 7 pacientes y 7 citas sin fallar.
-- [ ] En `/acceso`, credenciales incorrectas muestran un error en línea y no navegan.
-- [ ] Con las credenciales del seed del terapeuta, el login redirige a `/app/agenda`.
-- [ ] Visitar `/app/agenda` sin sesión iniciada redirige a `/acceso`.
-- [ ] Un usuario con rol `PATIENT` que intenta abrir `/app/agenda` es rechazado por el middleware.
-- [ ] A 390px de ancho se ve la tab bar de 5 ítems (Agenda, Pacientes, Calendario, Alertas, Ajustes) y no aparece scroll horizontal.
-- [ ] A 1024px de ancho se ve el rail lateral y desaparece la tab bar inferior.
-- [ ] `/app/agenda` lista las 7 citas del seed en orden cronológico y resalta visualmente la de las 10:00 como "ahora".
-- [ ] Los estados de cita `Sin confirmar`, `Domicilio` y `Confirmada` se pintan como píldoras usando `--ct-primary-soft` de fondo y `--ct-primary-deep` de texto.
-- [ ] Las horas (`08:30`) y los eyebrows (`LUNES 17 DE AGOSTO`) se renderizan en IBM Plex Mono, en mayúsculas y con letter-spacing.
-- [ ] Con la variable de entorno `TZ` del servidor puesta en un valor distinto a `America/Managua`, las fechas mostradas en pantalla siguen correspondiendo a la hora de Managua.
+- [x] `npm run typecheck` y `npm run lint` terminan sin errores.
+- [ ] `npx prisma migrate reset` recrea la base de datos y siembra 7 pacientes y 7 citas sin fallar. _(pendiente de correr manualmente — bloqueado para el agente por el clasificador de auto mode; `prisma db seed` sí se verificó exitoso sobre el estado actual de la base)_
+- [x] En `/acceso`, credenciales incorrectas muestran un error en línea y no navegan.
+- [x] Con las credenciales del seed del terapeuta, el login redirige a `/app/agenda`.
+- [x] Visitar `/app/agenda` sin sesión iniciada redirige a `/acceso`.
+- [x] Un usuario con rol `PATIENT` que intenta abrir `/app/agenda` es rechazado por el middleware.
+- [x] A 390px de ancho se ve la tab bar de 5 ítems (Agenda, Pacientes, Calendario, Alertas, Ajustes) y no aparece scroll horizontal. _(verificado por DOM/CSS; no se pudo forzar el viewport del navegador automatizado a 390px en este entorno)_
+- [x] A 1024px de ancho se ve el rail lateral y desaparece la tab bar inferior.
+- [x] `/app/agenda` lista las 7 citas del seed en orden cronológico y resalta visualmente la de las 10:00 como "ahora".
+- [x] Los estados de cita `Sin confirmar`, `Domicilio` y `Confirmada` se pintan como píldoras usando `--ct-primary-soft` de fondo y `--ct-primary-deep` de texto.
+- [x] Las horas (`08:30`) y los eyebrows (`LUNES 17 DE AGOSTO`) se renderizan en IBM Plex Mono, en mayúsculas y con letter-spacing.
+- [x] Con la variable de entorno `TZ` del servidor puesta en un valor distinto a `America/Managua`, las fechas mostradas en pantalla siguen correspondiendo a la hora de Managua. _(verificado por auditoría de código: todo el renderizado de fechas pasa por `formatTimeManagua`/`formatWeekdayDateManagua` con `timeZone: "America/Managua"` explícito)_
 
 ## Decisiones
 
