@@ -74,13 +74,14 @@ model User {
 }
 
 model Therapist {
-  id           String        @id @default(cuid())
-  userId       String        @unique
-  user         User          @relation(fields: [userId], references: [id])
-  fullName     String
-  licenseNo    String
-  patients     Patient[]
-  appointments Appointment[]
+  id             String          @id @default(cuid())
+  userId         String          @unique
+  user           User            @relation(fields: [userId], references: [id])
+  fullName       String
+  licenseNo      String
+  patients       Patient[]
+  appointments   Appointment[]
+  calendarBlocks CalendarBlock[]
 }
 
 model Patient {
@@ -212,4 +213,13 @@ model Reminder {
   message      String
   scheduledFor DateTime
   sentAt       DateTime?
+}
+
+model CalendarBlock {
+  id          String    @id @default(cuid())
+  therapistId String
+  therapist   Therapist @relation(fields: [therapistId], references: [id])
+  startsAt    DateTime
+  durationMin Int
+  label       String
 }

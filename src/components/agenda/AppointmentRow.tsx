@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import type { AppointmentLocation, AppointmentStatus } from "@prisma/client";
 import { Avatar, Button, Card, StatusPill } from "@/components/ui";
 import { formatTimeManagua } from "@/lib/datetime";
@@ -11,6 +12,7 @@ type AppointmentRowProps = {
   status: AppointmentStatus;
   location: AppointmentLocation;
   isNow: boolean;
+  menu?: ReactNode;
 };
 
 const STATUS_LABEL: Record<AppointmentStatus, string> = {
@@ -55,6 +57,7 @@ export function AppointmentRow({
   status,
   location,
   isNow,
+  menu,
 }: AppointmentRowProps) {
   const statusMarker =
     location === "HOME" ? (
@@ -87,11 +90,14 @@ export function AppointmentRow({
           </Link>
           <p className="truncate text-sm text-ct-ink-muted">{reasonLabel}</p>
         </div>
-        <div className="flex shrink-0 flex-col items-end gap-1.5">
-          {!isNow && (
-            <span className="font-mono text-sm text-ct-ink">{formatTimeManagua(startsAt)}</span>
-          )}
-          {statusMarker}
+        <div className="flex shrink-0 items-start gap-1.5">
+          <div className="flex flex-col items-end gap-1.5">
+            {!isNow && (
+              <span className="font-mono text-sm text-ct-ink">{formatTimeManagua(startsAt)}</span>
+            )}
+            {statusMarker}
+          </div>
+          {menu}
         </div>
       </div>
 

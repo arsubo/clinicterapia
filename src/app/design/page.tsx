@@ -8,6 +8,13 @@ import {
   StatTile,
   StatusPill,
 } from "@/components/ui";
+import {
+  addDaysManagua,
+  formatMonthYearManagua,
+  startOfMonthManagua,
+  startOfWeekManagua,
+  weekNumberManagua,
+} from "@/lib/datetime";
 
 const colorTokens = [
   { name: "--ct-bg-page", label: "Fondo de página" },
@@ -23,7 +30,13 @@ const colorTokens = [
   { name: "--ct-warn", label: "Advertencia" },
 ] as const;
 
+const REFERENCE_DATE = { year: 2026, month: 8, day: 19 };
+
 export default function DesignPage() {
+  const weekStart = startOfWeekManagua(REFERENCE_DATE);
+  const weekEnd = addDaysManagua(weekStart, 5);
+  const monthStart = startOfMonthManagua(REFERENCE_DATE);
+
   return (
     <div className="mx-auto max-w-4xl px-6 py-12">
       <p className="font-mono text-xs uppercase tracking-widest text-[color:var(--ct-ink-muted)]">
@@ -164,6 +177,54 @@ export default function DesignPage() {
           </div>
           <StatusPill tone="outline">Abrir</StatusPill>
         </Card>
+      </section>
+
+      <section className="mt-12">
+        <SectionHeader title="Fechas — helpers de periodo" />
+        <div className="mt-4 grid grid-cols-1 gap-4 rounded-xl border border-[color:var(--ct-border)] bg-[color:var(--ct-surface)] p-6 sm:grid-cols-2">
+          <div>
+            <p className="font-mono text-xs uppercase tracking-widest text-[color:var(--ct-ink-muted)]">
+              Referencia
+            </p>
+            <p className="mt-1 text-sm">19 de agosto de 2026</p>
+          </div>
+          <div>
+            <p className="font-mono text-xs uppercase tracking-widest text-[color:var(--ct-ink-muted)]">
+              startOfWeekManagua
+            </p>
+            <p className="mt-1 text-sm">
+              {weekStart.day}/{weekStart.month}/{weekStart.year} (debe ser lunes 17)
+            </p>
+          </div>
+          <div>
+            <p className="font-mono text-xs uppercase tracking-widest text-[color:var(--ct-ink-muted)]">
+              addDaysManagua (+5 desde el lunes)
+            </p>
+            <p className="mt-1 text-sm">
+              {weekEnd.day}/{weekEnd.month}/{weekEnd.year} (debe ser sábado 22)
+            </p>
+          </div>
+          <div>
+            <p className="font-mono text-xs uppercase tracking-widest text-[color:var(--ct-ink-muted)]">
+              startOfMonthManagua
+            </p>
+            <p className="mt-1 text-sm">
+              {monthStart.day}/{monthStart.month}/{monthStart.year}
+            </p>
+          </div>
+          <div>
+            <p className="font-mono text-xs uppercase tracking-widest text-[color:var(--ct-ink-muted)]">
+              formatMonthYearManagua
+            </p>
+            <p className="mt-1 text-sm">{formatMonthYearManagua(REFERENCE_DATE)}</p>
+          </div>
+          <div>
+            <p className="font-mono text-xs uppercase tracking-widest text-[color:var(--ct-ink-muted)]">
+              weekNumberManagua
+            </p>
+            <p className="mt-1 text-sm">{weekNumberManagua(REFERENCE_DATE)}</p>
+          </div>
+        </div>
       </section>
 
       <section className="mt-12 mb-12">
