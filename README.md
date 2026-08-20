@@ -10,21 +10,28 @@ El proyecto se construye spec por spec siguiendo el roadmap en [`specs/00-roadma
 
 **SPEC 01 — Fundación, design system y acceso** ([`specs/01-fundacion-design-system-y-acceso.md`](specs/01-fundacion-design-system-y-acceso.md)) está **Implementada**: el proyecto Next.js base, el design system, el esquema de datos completo, el acceso por email/contraseña, la navegación (`AppShell`) y la Agenda del día con datos reales.
 
-**SPEC 02 — Pacientes y expediente clínico** ([`specs/02-pacientes-y-expediente-clinico.md`](specs/02-pacientes-y-expediente-clinico.md)) tiene su plan de implementación completo (rama `spec-02-pacientes-y-expediente-clinico`): listado de pacientes con búsqueda y filtros, alta/edición de paciente, y la ficha de expediente con las pestañas `Resumen` y `Sesiones` funcionales (`Síntomas`, `Rutina` y `Citas` quedan con un `EmptyState` para las specs 03 y 04).
+**SPEC 02 — Pacientes y expediente clínico** ([`specs/02-pacientes-y-expediente-clinico.md`](specs/02-pacientes-y-expediente-clinico.md)) está **Implementada**: listado de pacientes con búsqueda y filtros, alta/edición de paciente, y la ficha de expediente con las pestañas `Resumen`, `Sesiones` y `Citas` funcionales (`Síntomas` y `Rutina` quedan con un `EmptyState` para la spec 04).
 
-Las siguientes specs (`03` en adelante) todavía no están implementadas — ver [`specs/00-roadmap.md`](specs/00-roadmap.md).
+**SPEC 03 — Agenda, calendario y citas a domicilio** ([`specs/03-agenda-calendario-y-citas-a-domicilio.md`](specs/03-agenda-calendario-y-citas-a-domicilio.md)) tiene su implementación completa (rama `spec-03-agenda-calendario-y-citas-a-domicilio`), pendiente de la verificación final de sus criterios de aceptación: calendario en vistas `Día`/`Semana`/`Mes` (URL como fuente de verdad), alta/edición/borrado de citas con validación de solapes (incluido el tiempo de viaje de las visitas a domicilio), cambio de estado y reprogramación por arrastre (ratón y táctil), y `/app/agenda` con huecos libres calculados y acciones de estado por cita.
+
+Las siguientes specs (`04` en adelante) todavía no están implementadas — ver [`specs/00-roadmap.md`](specs/00-roadmap.md).
 
 ### Rutas principales
 
 | Ruta | Descripción | Acceso |
 |---|---|---|
+| `/` | Redirige a `/acceso` | Público |
 | `/acceso` | Login por email/contraseña | Público |
-| `/app/agenda` | Agenda del día (citas, StatTiles, alertas, visita a domicilio) | `THERAPIST` |
+| `/app/agenda` | Agenda del día: citas con acciones de estado, huecos libres calculados, StatTiles, alertas y panel de visita a domicilio | `THERAPIST` |
+| `/app/calendario` | Calendario en vistas `Día`/`Semana`/`Mes` (`?vista=` y `?fecha=` en la URL), navegación de periodo y reprogramación por arrastre | `THERAPIST` |
+| `/app/calendario/nueva` | Alta de cita (acepta `?fecha=`, `?hora=` y `?paciente=` para prerrellenarse) | `THERAPIST` |
+| `/app/calendario/[id]/editar` | Edición de cita | `THERAPIST` |
 | `/app/pacientes` | Listado de pacientes: búsqueda, filtros (`Activos`/`Domicilio`/`Alta`) y agrupaciones | `THERAPIST` |
 | `/app/pacientes/nuevo` | Alta de paciente | `THERAPIST` |
 | `/app/pacientes/[id]` | Ficha del paciente — pestaña `Resumen` (StatTiles, alerta activa, evolución del dolor) | `THERAPIST` |
 | `/app/pacientes/[id]/sesiones` | Historial de sesiones, alta de sesión y edición de nota | `THERAPIST` |
-| `/app/pacientes/[id]/{sintomas,rutina,citas}` | Pestañas reservadas para las specs 03 y 04 (`EmptyState`) | `THERAPIST` |
+| `/app/pacientes/[id]/citas` | Citas `Próximas` y `Pasadas` del paciente, con botón `Agendar` | `THERAPIST` |
+| `/app/pacientes/[id]/{sintomas,rutina}` | Pestañas reservadas para la spec 04 (`EmptyState`) | `THERAPIST` |
 | `/app/pacientes/[id]/editar` | Edición de paciente | `THERAPIST` |
 | `/design` | Catálogo visual de tokens y primitivas UI | Público |
 
@@ -58,6 +65,8 @@ El seed (`prisma/seed.ts`) crea un terapeuta y 7 pacientes, todos con la misma c
 |---|---|---|
 | Terapeuta (César Fonseca) | `cesar@pauta.clinic` | `clinicterapia123` |
 | Pacientes (Andrés, Marta, Lucía, Javier, Nuria, Tomás, Carmen) | `{nombre}@pauta.clinic` | `paciente123` |
+
+También siembra la semana completa del calendario (17–22 de agosto de 2026, con semanas adyacentes para que la vista `Mes` tenga contenido) y un bloqueo de agenda (`Cierre de caja`) de ejemplo.
 
 Solo `THERAPIST` tiene acceso funcional en esta spec (`/app/*`); el login de paciente existe pero su portal (`/portal/*`) aún no está implementado.
 
